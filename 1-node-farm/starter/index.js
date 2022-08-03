@@ -64,10 +64,10 @@ const TemplateCard = fs.readFileSync("./templates/template-card.html", "utf-8");
 const TemplateProduct = fs.readFileSync("./templates/template-product.html", "utf-8");
 
 const server = http.createServer((req, res) => {
-    const pathName = req.url;
+    const { query, pathname } = url.parse(req.url, true);
 
     // Overview Page
-    if (pathName === "/" || pathName === '/overview')
+    if (pathname === "/" || pathname === '/overview')
     {
         res.writeHead(200, {"Content-Type": "text/html"});
 
@@ -78,13 +78,18 @@ const server = http.createServer((req, res) => {
     }
 
     // Product Page
-    else if (pathName === "/product")
+    else if (pathname === "/product")
     {
-        res.end("This is the PRODCUT");
+        res.writeHead(200, {"Content-Type": "text/html"});
+
+        const product = APIObject[query.id];
+        const output = ReplateTemplate(TemplateProduct, product);
+
+        res.end(output);
     }
 
     // API
-    else if (pathName === "/api")
+    else if (pathname === "/api")
     {
         res.writeHead(200, { "content-type": "application/json" });
         res.end(APIString);
